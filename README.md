@@ -29,13 +29,13 @@ Make sure you have the following installed:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/web-tester-suite.git
-   cd web-tester-suite
+   git clone https://github.com/galaxyytriponmbile/ALXX-WEBSTER.git
+   cd ALXX-WEBSTER
    ```
 
 2. Make the script executable:
    ```bash
-   chmod +x web_test.sh
+   chmod +x webster.sh
    ```
 
 3. Run the script with your target:
