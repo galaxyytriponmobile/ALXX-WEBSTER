@@ -1,7 +1,7 @@
 # 🎉 Web Tester Suite 🚀
 
 Welcome to the **Web Tester Suite**! This script is designed to help you perform a variety of web tests with just a few commands. It integrates popular tools like **Nikto**, **WhatWeb**, **Nmap**, **WAFW00F**, and **SSLScan** to give you insights into your target web applications. Perfect for penetration testers and security enthusiasts! 🔍✨
-
+THIS PROSCESS MIGHT TAKE LONG BECAUSE OF NIKTO, WHICH COULD TAKE UP TO 20 MINUTES TO COMPLETE.
 ## 🛠️ Features
 
 - **Nikto** for vulnerability scanning 🔒
@@ -29,7 +29,7 @@ Make sure you have the following installed:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/galaxyytriponmbile/ALXX-WEBSTER.git
+   git clone https://github.com/galaxyytriponmobile/ALXX-WEBSTER.git
    cd ALXX-WEBSTER
    ```
 
