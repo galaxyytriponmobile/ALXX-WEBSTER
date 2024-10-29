@@ -40,7 +40,7 @@ Example:
 ./webster.sh example.com
 ```
 
-*MAKE SURE TO RUN `chmod +x webster.sh` BEFORE USE
+**MAKE SURE TO RUN `chmod +x webster.sh` BEFORE USE**
 
 Results are saved in the `results/` folder, with individual files for each scan.
 
@@ -48,6 +48,7 @@ Results are saved in the `results/` folder, with individual files for each scan.
 
 ## 📝 Update Log
 
+- **v2.1**: Fixed IP related issues, option to remove `nikto` may be coming soon. 
 - **v2.0**: Integrated IP extraction with `dig`, added optional Nikto timeout skip, reorganized scan order, and improved summaries.
 - **v1.0**: Initial release.
 
