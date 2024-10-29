@@ -2,7 +2,7 @@
 
 # Ensure the script is run with a target
 if [ -z "$1" ]; then
-    echo "Usage: $0 <domain_or_ip>"
+    echo "Usage: $0 <domain_or_ip> (Use the same IP and/or domain you used before in webster.)"
     exit 1
 fi
 
