@@ -20,6 +20,7 @@ Welcome to the WEBSTER! This tool lets you test a target domain or IP using a ra
    - `WAFW00F` for Web Application Firewall detection.
    - `SSLScan` to evaluate SSL/TLS settings.
    - `cmseek` make sure it`s installed.
+   - `gobuster` for directory brute force.
 
 4. **Customizable Timeout and Pauses**:
    - 10-second rest after each command to avoid overwhelming requests.
@@ -57,6 +58,7 @@ Results are saved in the `results/` folder, with individual files for each scan.
 
 ## 📝 Update Log
 
+- **v2.4**: Added `cmseek` and `gobuster` to script, adding keywords in v2.5 which may be final version.
 - **v2.3**: Added `report_summary.sh` to scan and report vulnerabilities from `report.txt`.
 - **v2.2**: Removed `searchsploit` because of uselessness and errors.
 - **v2.1**: Fixed IP related errors, removed `nikto` because of issues, I will be adding it back.
