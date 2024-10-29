@@ -67,6 +67,15 @@ run_tests() {
         echo "Running Nmap SSL Enum Ciphers..."
         run_with_timeout "nmap --script ssl-enum-ciphers -p 443 -oX \"$RESULT_DIR/nmap_ssl_ciphers.xml\" \"$IP\"" "$RESULT_DIR/nmap_ssl_ciphers.txt"
 
+        echo "Running directory brute-forcing with Gobuster..."
+        run_with_timeout "gobuster dir -u \"$TARGET\" -w /usr/share/wordlists/dirb/common.txt" "$RESULT_DIR/gobuster.txt"
+
+        echo "Running CMS identification with CMSeek..."
+        run_with_timeout "cmseek -u \"$TARGET\"" "$RESULT_DIR/cmseek.txt"
+
+        echo "Running Nmap Vulners script..."
+        run_with_timeout "nmap -sV --script vulners \"$IP_ADDRESS\"" "$RESULT_DIR/nmap_vulners.txt"
+
     done
 
     echo "Tests completed. Results stored in the '$RESULT_DIR' directory."
