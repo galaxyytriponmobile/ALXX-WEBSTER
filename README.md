@@ -55,6 +55,6 @@ Results are saved in the `results/` folder, with individual files for each scan.
 
 For feedback or issues, reach out to:
 
-- **GitHub**: [GitHub Profile](https://github.com/galaxyytriponmboile)
+- **GitHub**: [GitHub Profile](https://github.com/galaxyytriponmobile)
 
 Happy Scanning! 🚀
