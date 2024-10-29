@@ -53,10 +53,10 @@ run_tests() {
         fi
 
         echo "Running Nmap HTTP server header..."
-        run_with_timeout "nmap -p 80,443 --script http-server-header -oX \"$RESULT_DIR/nmap_http.xml\" \"$IP\"" "$RESULT_DIR/nmap_http.txt"
+        run_with_timeout "nmap -p 80,443 --script http-server-header \"$IP\"" "$RESULT_DIR/nmap_http.txt"
 
         echo "Running Nmap Aggressive Scan..."
-        run_with_timeout "nmap -A -oX \"$RESULT_DIR/nmap_aggressive.xml\" \"$IP\"" "$RESULT_DIR/nmap_aggressive.txt"
+        run_with_timeout "nmap -A \"$IP\"" "$RESULT_DIR/nmap_aggressive.txt"
 
         echo "Running WAFW00F..."
         run_with_timeout "wafw00f -a \"$IP\"" "$RESULT_DIR/wafw00f.txt"
