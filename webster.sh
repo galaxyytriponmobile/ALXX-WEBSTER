@@ -91,9 +91,8 @@ launch_tools() {
         echo "1) ZAP"
         echo "2) Burp Suite"
         echo "3) Save results as report"
-        echo "4) Run SearchSploit on a specific XML file"
-        echo "5) Exit"
-        read -p "Enter your choice (1/2/3/4/5): " choice
+        echo "4) Exit"
+        read -p "Enter your choice (1/2/3/4): " choice
 
         case $choice in
             1)
@@ -110,23 +109,11 @@ launch_tools() {
                 echo "Report saved as report.txt in the results directory."
                 ;;
             4)
-                echo "Available XML files for SearchSploit analysis:"
-                select xml_file in "$RESULT_DIR"/*.xml; do
-                    if [[ -n $xml_file ]]; then
-                        echo "Running SearchSploit on $xml_file..."
-                        searchsploit -v --xml "$xml_file"
-                        break
-                    else
-                        echo "Invalid choice. Please select a valid XML file."
-                    fi
-                done
-                ;;
-            5)
                 echo "Exiting."
                 exit 0
                 ;;
             *)
-                echo "Invalid choice. Please enter a number from 1 to 5."
+                echo "Invalid choice. Please enter a number from 1 to 4."
                 ;;
         esac
     done
