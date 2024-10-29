@@ -19,6 +19,7 @@ Welcome to the WEBSTER! This tool lets you test a target domain or IP using a ra
    - `Nmap` scans for server headers, aggressive scans, and SSL enumeration.
    - `WAFW00F` for Web Application Firewall detection.
    - `SSLScan` to evaluate SSL/TLS settings.
+   - `cmseek` make sure it`s installed.
 
 4. **Customizable Timeout and Pauses**:
    - 10-second rest after each command to avoid overwhelming requests.
