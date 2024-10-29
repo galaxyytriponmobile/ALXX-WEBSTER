@@ -54,7 +54,7 @@ Results are saved in the `results/` folder, with individual files for each scan.
 ## 👥 Contact
 
 For feedback or issues, reach out to:
-- **John Doe**: johndoe@example.com
-- **GitHub**: [GitHub Profile](https://github.com/johndoe)
+
+- **GitHub**: [GitHub Profile](https://github.com/galaxyytriponmboile)
 
 Happy Scanning! 🚀
