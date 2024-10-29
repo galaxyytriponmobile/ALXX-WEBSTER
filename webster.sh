@@ -15,25 +15,21 @@ mkdir -p "$RESULT_DIR"
 # Function to run a command with a timeout
 run_with_timeout() {
     local cmd="$1"
-    local timeout="$2"
-    local output_file="$3"
-
-    # Run the command in the background
+    local output_file="$2"
+    
     eval "$cmd > \"$output_file\" 2>&1 &"
     local cmd_pid=$!
-
-    # Wait for the command to finish
     wait "$cmd_pid"
     local status=$?
 
     return $status
 }
 
-# Function to extract IP addresses from Nikto output
-extract_ips() {
-    local output_file="$1"
-    local ips=$(grep -oP '\d{1,3}(\.\d{1,3}){3}' "$output_file" | sort -u)
-    echo "$ips"
+# Function to extract IP addresses using dig
+extract_ip() {
+    local target="$1"
+    local ip=$(dig +short "$target" | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}')
+    echo "$ip"
 }
 
 # Function to run tests
@@ -43,59 +39,71 @@ run_tests() {
     # Check if the target is an IP or domain
     if [[ "$TARGET" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
         echo "Detected an IP address."
+        IP_ADDRESSES="$TARGET"
     else
-        echo "Detected a domain."
+        echo "Detected a domain. Resolving IP..."
+        IP_ADDRESSES=$(extract_ip "$TARGET")
     fi
 
-    # Run Nikto first
-    echo "Running Nikto..."
-    run_with_timeout "nikto -h \"$TARGET\"" 30 "$RESULT_DIR/nikto.txt"
-    sleep 10
-
-    # Extract IP addresses from Nikto results
-    IP_ADDRESSES=$(extract_ips "$RESULT_DIR/nikto.txt")
-    
     if [ -z "$IP_ADDRESSES" ]; then
-        echo "No IP addresses found from Nikto. Exiting."
+        echo "No IP address found. Exiting."
         exit 1
     fi
 
-    echo "Extracted IP addresses: $IP_ADDRESSES"
+    echo "Extracted IP address: $IP_ADDRESSES"
 
     # Run tests with the extracted IP addresses
     for IP in $IP_ADDRESSES; do
         echo "Running tests on IP: $IP"
 
         echo "Running WhatWeb..."
-        run_with_timeout "whatweb \"$IP\"" 30 "$RESULT_DIR/whatweb.txt"
+        run_with_timeout "whatweb \"$IP\"" "$RESULT_DIR/whatweb.txt"
         sleep 10
 
         echo "Running Sublist3r (only for domains)..."
         if [[ ! "$TARGET" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            run_with_timeout "python3 Sublist3r/sublist3r.py -d \"$TARGET\"" 30 "$RESULT_DIR/sublist3r.txt"
+            run_with_timeout "python3 Sublist3r/sublist3r.py -d \"$TARGET\"" "$RESULT_DIR/sublist3r.txt"
             sleep 10
         fi
 
         echo "Running Nmap HTTP server header..."
-        run_with_timeout "nmap -p 80,443 --script http-server-header \"$IP\"" 30 "$RESULT_DIR/nmap_http.txt"
+        run_with_timeout "nmap -p 80,443 --script http-server-header \"$IP\"" "$RESULT_DIR/nmap_http.txt"
         sleep 10
 
         echo "Running Nmap Aggressive Scan..."
-        run_with_timeout "nmap -A \"$IP\"" 30 "$RESULT_DIR/nmap_aggressive.txt"
+        run_with_timeout "nmap -A \"$IP\"" "$RESULT_DIR/nmap_aggressive.txt"
         sleep 10
 
         echo "Running WAFW00F..."
-        run_with_timeout "wafw00f -a \"$IP\"" 30 "$RESULT_DIR/wafw00f.txt"
+        run_with_timeout "wafw00f -a \"$IP\"" "$RESULT_DIR/wafw00f.txt"
         sleep 10
 
         echo "Running SSLScan..."
-        run_with_timeout "sslscan \"$IP\"" 30 "$RESULT_DIR/sslscan.txt"
+        run_with_timeout "sslscan \"$IP\"" "$RESULT_DIR/sslscan.txt"
         sleep 10
 
         echo "Running Nmap SSL Enum Ciphers..."
-        run_with_timeout "nmap --script ssl-enum-ciphers -p 443 \"$IP\"" 30 "$RESULT_DIR/nmap_ssl_ciphers.txt"
+        run_with_timeout "nmap --script ssl-enum-ciphers -p 443 \"$IP\"" "$RESULT_DIR/nmap_ssl_ciphers.txt"
         sleep 10
     done
+
+    # Run Nikto as the final test with an option to skip if it takes too long
+    echo "Running Nikto..."
+    run_with_timeout "nikto -h \"$TARGET\"" "$RESULT_DIR/nikto.txt" &
+    local nikto_pid=$!
+    sleep 30
+
+    if ps -p $nikto_pid > /dev/null; then
+        echo "Nikto scan is taking longer than expected."
+        read -p "Do you want to skip Nikto? (y/n): " skip_nikto
+        if [[ "$skip_nikto" == "y" ]]; then
+            kill "$nikto_pid" 2>/dev/null
+            echo "Nikto scan skipped."
+        else
+            echo "Waiting for Nikto to finish..."
+            wait "$nikto_pid"
+        fi
+    fi
 
     echo "Tests completed. Results stored in the '$RESULT_DIR' directory."
 }
