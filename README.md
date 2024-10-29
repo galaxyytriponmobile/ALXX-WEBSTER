@@ -41,6 +41,7 @@ Example:
 ```
 
 *MAKE SURE TO RUN `chmod +x webster.sh` BEFORE USE
+
 Results are saved in the `results/` folder, with individual files for each scan.
 
 ---
