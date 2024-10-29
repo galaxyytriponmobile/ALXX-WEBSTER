@@ -16,94 +16,58 @@ mkdir -p "$RESULT_DIR"
 run_with_timeout() {
     local cmd="$1"
     local output_file="$2"
-    
     eval "$cmd > \"$output_file\" 2>&1 &"
-    local cmd_pid=$!
-    wait "$cmd_pid"
+    wait $!
     local status=$?
-
+    sleep 10  # 10-second pause between commands
     return $status
 }
 
 # Function to extract IP addresses using dig
-extract_ip() {
-    local target="$1"
-    local ip=$(dig +short "$target" | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}')
-    echo "$ip"
+extract_ips() {
+    # Only extract IP addresses without printing extra information
+    dig +short "$TARGET" | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | sort -u
 }
 
 # Function to run tests
 run_tests() {
     echo "Running tests on $TARGET..."
-
-    # Check if the target is an IP or domain
-    if [[ "$TARGET" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-        echo "Detected an IP address."
-        IP_ADDRESSES="$TARGET"
-    else
-        echo "Detected a domain. Resolving IP..."
-        IP_ADDRESSES=$(extract_ip "$TARGET")
-    fi
-
+    IP_ADDRESSES=$(extract_ips)
+    
     if [ -z "$IP_ADDRESSES" ]; then
-        echo "No IP address found. Exiting."
+        echo "No IP addresses found. Exiting."
         exit 1
     fi
 
-    echo "Extracted IP address: $IP_ADDRESSES"
+    echo "Extracted IP addresses: $IP_ADDRESSES"
 
-    # Run tests with the extracted IP addresses
     for IP in $IP_ADDRESSES; do
         echo "Running tests on IP: $IP"
 
         echo "Running WhatWeb..."
         run_with_timeout "whatweb \"$IP\"" "$RESULT_DIR/whatweb.txt"
-        sleep 10
 
         echo "Running Sublist3r (only for domains)..."
         if [[ ! "$TARGET" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            run_with_timeout "python3 Sublist3r/sublist3r.py -d \"$TARGET\"" "$RESULT_DIR/sublist3r.txt"
-            sleep 10
+            run_with_timeout "sublist3r -d \"$TARGET\"" "$RESULT_DIR/sublist3r.txt"
         fi
 
         echo "Running Nmap HTTP server header..."
-        run_with_timeout "nmap -p 80,443 --script http-server-header \"$IP\"" "$RESULT_DIR/nmap_http.txt"
-        sleep 10
+        run_with_timeout "nmap -p 80,443 --script http-server-header -oX \"$RESULT_DIR/nmap_http.xml\" \"$IP\"" "$RESULT_DIR/nmap_http.txt"
 
         echo "Running Nmap Aggressive Scan..."
-        run_with_timeout "nmap -A \"$IP\"" "$RESULT_DIR/nmap_aggressive.txt"
-        sleep 10
+        run_with_timeout "nmap -A -oX \"$RESULT_DIR/nmap_aggressive.xml\" \"$IP\"" "$RESULT_DIR/nmap_aggressive.txt"
 
         echo "Running WAFW00F..."
         run_with_timeout "wafw00f -a \"$IP\"" "$RESULT_DIR/wafw00f.txt"
-        sleep 10
 
         echo "Running SSLScan..."
         run_with_timeout "sslscan \"$IP\"" "$RESULT_DIR/sslscan.txt"
-        sleep 10
 
         echo "Running Nmap SSL Enum Ciphers..."
-        run_with_timeout "nmap --script ssl-enum-ciphers -p 443 \"$IP\"" "$RESULT_DIR/nmap_ssl_ciphers.txt"
-        sleep 10
+        run_with_timeout "nmap --script ssl-enum-ciphers -p 443 -oX \"$RESULT_DIR/nmap_ssl_ciphers.xml\" \"$IP\"" "$RESULT_DIR/nmap_ssl_ciphers.txt"
+
     done
-
-    # Run Nikto as the final test with an option to skip if it takes too long
-    echo "Running Nikto..."
-    run_with_timeout "nikto -h \"$TARGET\"" "$RESULT_DIR/nikto.txt" &
-    local nikto_pid=$!
-    sleep 30
-
-    if ps -p $nikto_pid > /dev/null; then
-        echo "Nikto scan is taking longer than expected."
-        read -p "Do you want to skip Nikto? (y/n): " skip_nikto
-        if [[ "$skip_nikto" == "y" ]]; then
-            kill "$nikto_pid" 2>/dev/null
-            echo "Nikto scan skipped."
-        else
-            echo "Waiting for Nikto to finish..."
-            wait "$nikto_pid"
-        fi
-    fi
 
     echo "Tests completed. Results stored in the '$RESULT_DIR' directory."
 }
@@ -114,7 +78,7 @@ display_summary() {
     echo "-----------------"
     for file in "$RESULT_DIR"/*.txt; do
         echo "$(basename "$file"):"
-        head -n 5 "$file"  # Show first 5 lines for summary
+        head -n 5 "$file"
         echo "..."
     done
     echo "End of summary."
@@ -122,38 +86,53 @@ display_summary() {
 
 # Function to launch tools
 launch_tools() {
-    echo "Select a tool to launch:"
-    echo "1) ZAP"
-    echo "2) Burp Suite"
-    echo "3) Save results as report"
-    echo "4) Exit"
-    read -p "Enter your choice (1/2/3/4): " choice
+    while true; do
+        echo "Select a tool or action to launch:"
+        echo "1) ZAP"
+        echo "2) Burp Suite"
+        echo "3) Save results as report"
+        echo "4) Run SearchSploit on a specific XML file"
+        echo "5) Exit"
+        read -p "Enter your choice (1/2/3/4/5): " choice
 
-    case $choice in
-        1)
-            echo "Launching ZAP..."
-            /root/Desktop/ZAP/zap.sh &
-            ;;
-        2)
-            echo "Launching Burp Suite..."
-            burpsuite &
-            ;;
-        3)
-            echo "Saving results as report..."
-            cat "$RESULT_DIR"/*.txt > "$RESULT_DIR/report.txt"
-            echo "Report saved as report.txt in the results directory."
-            ;;
-        4)
-            echo "Exiting."
-            exit 0
-            ;;
-        *)
-            echo "Invalid choice."
-            ;;
-    esac
+        case $choice in
+            1)
+                echo "Launching ZAP..."
+                /root/Desktop/ZAP/zap.sh &
+                ;;
+            2)
+                echo "Launching Burp Suite..."
+                burpsuite &
+                ;;
+            3)
+                echo "Saving results as report..."
+                cat "$RESULT_DIR"/*.txt > "$RESULT_DIR/report.txt"
+                echo "Report saved as report.txt in the results directory."
+                ;;
+            4)
+                echo "Available XML files for SearchSploit analysis:"
+                select xml_file in "$RESULT_DIR"/*.xml; do
+                    if [[ -n $xml_file ]]; then
+                        echo "Running SearchSploit on $xml_file..."
+                        searchsploit -v --xml "$xml_file"
+                        break
+                    else
+                        echo "Invalid choice. Please select a valid XML file."
+                    fi
+                done
+                ;;
+            5)
+                echo "Exiting."
+                exit 0
+                ;;
+            *)
+                echo "Invalid choice. Please enter a number from 1 to 5."
+                ;;
+        esac
+    done
 }
 
-# Run tests and display summary
+# Run tests, display summary, and launch tools
 run_tests
 display_summary
 launch_tools
