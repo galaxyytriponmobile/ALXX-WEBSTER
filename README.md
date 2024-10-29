@@ -48,6 +48,7 @@ Results are saved in the `results/` folder, with individual files for each scan.
 
 ## 📝 Update Log
 
+- **v2.2**: Removed Searchsploit because of uselessness and errors.
 - **v2.1**: Fixed IP related errors, removed `nikto` because of issues, I will be adding it back.
 - **v2.0**: Integrated IP extraction with `dig`, added optional Nikto timeout skip, reorganized scan order, and improved summaries.
 - **v1.0**: Initial release.
