@@ -30,6 +30,8 @@ Welcome to the WEBSTER! This tool lets you test a target domain or IP using a ra
 
 ## 🚀 Getting Started
 
+**MAKE SURE TO RUN `chmod +x webster.sh` BEFORE USE**
+
 To use the script, run:
 ```bash
 ./webster.sh <target_domain_or_ip>
@@ -40,7 +42,12 @@ Example:
 ./webster.sh example.com
 ```
 
-**MAKE SURE TO RUN `chmod +x webster.sh` BEFORE USE**
+**MAKE SURE TO RUN `chmod +x report_summary.sh` BEFORE USE**
+
+**Run report_summary.sh to parse and summarize the report.txt:**
+``bash
+./report_summary.sh``
+This script will search for key terms like "vulnerability," "exploit," "OS", and "SSL/TLS" to generate an overview of findings.
 
 Results are saved in the `results/` folder, with individual files for each scan.
 
@@ -48,6 +55,7 @@ Results are saved in the `results/` folder, with individual files for each scan.
 
 ## 📝 Update Log
 
+- **v2.3**: Added `report_summary.sh` to scan and report vulnerabilities from `report.txt`.
 - **v2.2**: Removed `searchsploit` because of uselessness and errors.
 - **v2.1**: Fixed IP related errors, removed `nikto` because of issues, I will be adding it back.
 - **v2.0**: Integrated IP extraction with `dig`, added optional Nikto timeout skip, reorganized scan order, and improved summaries.
