@@ -45,8 +45,9 @@ Example:
 **MAKE SURE TO RUN `chmod +x report_summary.sh` BEFORE USE**
 
 **Run report_summary.sh to parse and summarize the report.txt:**
-``bash
-./report_summary.sh``
+```bash
+./report_summary.sh
+```
 This script will search for key terms like "vulnerability," "exploit," "OS", and "SSL/TLS" to generate an overview of findings.
 
 Results are saved in the `results/` folder, with individual files for each scan.
