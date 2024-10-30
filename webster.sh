@@ -108,3 +108,8 @@ echo -e "${CYAN}[+] Running Nmap Vulners Script...${RESET}"
 run_with_timer "nmap -sV --script vulners \"$TARGET\"" "$RESULT_DIR/nmap_vulners.txt"
 
 echo -e "${GREEN}All scans completed! Results saved in ${RESULT_DIR}.${RESET}"
+
+REPORT_FILE="$RESULT_DIR/report.txt"
+echo -e "${CYAN}Generating report summary at $REPORT_FILE...${RESET}"
+cat "$RESULT_DIR"/*.txt > "$REPORT_FILE"
+echo -e "${GREEN}Report generated: $REPORT_FILE${RESET}"
