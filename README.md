@@ -32,13 +32,13 @@ Welcome to the WEBSTER! This tool lets you test a target domain or IP using a ra
 ---
 
 ## 🚀 Getting Started
-# To get repo, copy this code;
+To get repo, copy this code;
 ```bash
 git clone https://github.com/galaxyytriponmobile/ALXX-WEBSTER.git
 cd ALXX-WEBSTER
 ```
 
-# Run the updater;
+Run the updater;
 **MAKE SURE TO RUN `chmod +x updater.sh` BEFORE USE**
 
 ```bash
@@ -55,7 +55,7 @@ Example:
 ./webster.sh example.com
 ```
 
-**Run report_summary.sh to parse and summarize the report.txt:**
+Run report_summary.sh to parse and summarize the report.txt:
 ```bash
 ./report_summary.sh
 ```
