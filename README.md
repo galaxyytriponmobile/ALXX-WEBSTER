@@ -13,15 +13,6 @@ Welcome to the WEBSTER! This tool lets you test a target domain or IP using a ra
 2. **Nikto Vulnerability Scan** (Optional with timeout skip):
    - `Nikto` is run in the background to check for potential vulnerabilities. You can opt to skip this scan if it takes too long.
 
-3. **Additional Scans & Tools**:
-   - `WhatWeb` to identify technologies on the IP.
-   - `Sublist3r` for subdomain enumeration (only for domain targets).
-   - `Nmap` scans for server headers, aggressive scans, and SSL enumeration.
-   - `WAFW00F` for Web Application Firewall detection.
-   - `SSLScan` to evaluate SSL/TLS settings.
-   - `cmseek` make sure it`s installed.
-   - `gobuster` for directory brute force.
-   - `updater.sh` updates all of your tools needed for this file.
 
 4. **Customizable Timeout and Pauses**:
    - 10-second rest after each command to avoid overwhelming requests.
