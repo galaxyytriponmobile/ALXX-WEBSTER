@@ -42,6 +42,7 @@ Run the updater;
 **MAKE SURE TO RUN `chmod +x updater.sh` BEFORE USE**
 
 ```bash
+chmod +x updater.sh
 ./updater.sh
 ```
 
