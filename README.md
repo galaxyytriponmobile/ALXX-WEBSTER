@@ -21,6 +21,7 @@ Welcome to the WEBSTER! This tool lets you test a target domain or IP using a ra
    - `SSLScan` to evaluate SSL/TLS settings.
    - `cmseek` make sure it`s installed.
    - `gobuster` for directory brute force.
+   - `updater.sh` updates all of your tools needed for this file.
 
 4. **Customizable Timeout and Pauses**:
    - 10-second rest after each command to avoid overwhelming requests.
@@ -31,6 +32,12 @@ Welcome to the WEBSTER! This tool lets you test a target domain or IP using a ra
 ---
 
 ## 🚀 Getting Started
+
+**MAKE SURE TO RUN `chmod +x updater.sh` BEFORE USE**
+
+```bash
+./updater.sh
+```
 
 **MAKE SURE TO RUN `chmod +x webster.sh` BEFORE USE**
 
