@@ -2,6 +2,8 @@
 
 echo "Starting installation of required tools..."
 
+chmod +x report_summary.sh
+chmod +x webster.sh
 # Install each tool with apt
 sudo apt update
 
@@ -34,5 +36,5 @@ sudo apt install -y cmseek
 
 # Install SearchSploit for CVE and exploit searching
 sudo apt install -y exploitdb
-
+clear
 echo "All required tools have been installed."
