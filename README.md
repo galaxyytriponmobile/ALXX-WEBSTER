@@ -52,7 +52,7 @@ Results are saved in the `results/` folder, with individual files for each scan.
 
 ## 📝 Update Log
 
--**v2.7**: Fused `updater.sh` into `webster.sh` and updated the looks, looks amazing now.
+- **v2.7**: Fused `updater.sh` into `webster.sh` and updated the looks, looks amazing now.
 - **v2.6**: Added even more keywords, added `updater.sh` into repo.
 - **v2.5**: Added keywords for `cmseek` and `gobuster` into `report_summary.sh`
 - **v2.4**: Added `cmseek` and `gobuster` to webster, adding keywords in v2.5 and in future versions i will be updating looks to make it look better.
