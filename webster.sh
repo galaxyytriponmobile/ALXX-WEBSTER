@@ -7,7 +7,7 @@ CYAN='\033[1;36m'
 RESET='\033[0m'
 
 # ASCII Art Banner
-
+chmod +x report_summary.sh
 clear
 
 echo -e "${CYAN}"
