@@ -19,7 +19,7 @@ run_with_timeout() {
     eval "$cmd > \"$output_file\" 2>&1 &"
     wait $!
     local status=$?
-    sleep 10  # 10-second pause between commands
+    sleep 20  # 10-second pause between commands
     return $status
 }
 
