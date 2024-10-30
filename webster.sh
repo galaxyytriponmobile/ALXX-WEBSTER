@@ -61,7 +61,7 @@ run_tests() {
         run_with_timeout "nmap -A \"$IP\"" "$RESULT_DIR/nmap_aggressive.txt"
 
         echo "Running WAFW00F..."
-        run_with_timeout "wafw00f -a \"$IP\"" "$RESULT_DIR/wafw00f.txt"
+        run_with_timeout "wafw00f -a \"$TARGET\"" "$RESULT_DIR/wafw00f.txt"
 
         echo "Running SSLScan..."
         run_with_timeout "sslscan \"$IP\"" "$RESULT_DIR/sslscan.txt"
