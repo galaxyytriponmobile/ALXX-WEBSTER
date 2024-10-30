@@ -39,8 +39,6 @@ Welcome to the WEBSTER! This tool lets you test a target domain or IP using a ra
 ./updater.sh
 ```
 
-**MAKE SURE TO RUN `chmod +x webster.sh` BEFORE USE**
-
 To use the script, run:
 ```bash
 ./webster.sh <target_domain_or_ip>
@@ -50,8 +48,6 @@ Example:
 ```bash
 ./webster.sh example.com
 ```
-
-**MAKE SURE TO RUN `chmod +x report_summary.sh` BEFORE USE**
 
 **Run report_summary.sh to parse and summarize the report.txt:**
 ```bash
