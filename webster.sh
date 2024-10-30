@@ -19,9 +19,9 @@ run_with_timeout() {
     eval "$cmd > \"$output_file\" 2>&1 &"
     wait $!
     local status=$?
-    echo "Waiting for 20 seconds..."
-    sleep 20  # 10-second pause between commands
-    echo "Next command is strating..."
+    echo "Waiting for 13 seconds..."
+    sleep 13  # 10-second pause between commands
+    echo "Next command is starting..."
     return $status
 }
 
