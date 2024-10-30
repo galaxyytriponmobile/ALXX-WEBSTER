@@ -58,6 +58,7 @@ Results are saved in the `results/` folder, with individual files for each scan.
 
 ## 📝 Update Log
 
+-**v2.5**: Added keywords for `cmseek` and `gobuster` into `report_summary.sh`
 - **v2.4**: Added `cmseek` and `gobuster` to webster, adding keywords in v2.5 and in future versions i will be updating looks to make it look better.
 - **v2.3**: Added `report_summary.sh` to scan and report vulnerabilities from `report.txt`.
 - **v2.2**: Removed `searchsploit` because of uselessness and errors.
