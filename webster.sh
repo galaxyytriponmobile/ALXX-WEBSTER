@@ -1,5 +1,27 @@
 #!/bin/bash
 
+# Colors for styling
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[1;36m'
+RESET='\033[0m'
+
+# ASCII Art Banner
+
+clear
+
+echo -e "${CYAN}"
+echo "  █     █░▓█████  ▄▄▄▄     ██████ ▄▄▄█████▓▓█████  ██▀███   "
+echo " ▓█░ █ ░█░▓█   ▀ ▓█████▄ ▒██    ▒ ▓  ██▒ ▓▒▓█   ▀ ▓██ ▒ ██▒ "
+echo " ▒█░ █ ░█ ▒███   ▒██▒ ▄██░ ▓██▄   ▒ ▓██░ ▒░▒███   ▓██ ░▄█ ▒ "
+echo " ░█░ █ ░█ ▒▓█  ▄ ▒██░█▀    ▒   ██▒░ ▓██▓ ░ ▒▓█  ▄ ▒██▀▀█▄   "
+echo " ░░██▒██▓ ░▒████▒░▓█  ▀█▓▒██████▒▒  ▒██▒ ░ ░▒████▒░██▓ ▒██▒ "
+echo " ░ ▓░▒ ▒  ░░ ▒░ ░░▒▓███▀▒▒ ▒▓▒ ▒ ░  ▒ ░░   ░░ ▒░ ░░ ▒▓ ░▒▓░ "
+echo "   ▒ ░ ░   ░ ░  ░▒░▒   ░ ░ ░▒  ░ ░    ░     ░ ░  ░  ░▒ ░ ▒░ "
+echo "   ░   ░     ░    ░    ░ ░  ░  ░    ░         ░     ░░   ░  "
+echo "     ░       ░  ░ ░            ░              ░  ░   ░      "
+echo "                       ░                                    "
+echo -e "${RESET}"
 # Ensure the script is run with a target
 if [ -z "$1" ]; then
     echo "Usage: $0 <domain_or_ip>"
@@ -7,130 +29,82 @@ if [ -z "$1" ]; then
 fi
 
 TARGET=$1
-
-# Create a directory to store results
 RESULT_DIR="./results"
 mkdir -p "$RESULT_DIR"
 
-# Function to run a command with a timeout
-run_with_timeout() {
+# Function to display time elapsed
+run_with_timer() {
     local cmd="$1"
     local output_file="$2"
+    local elapsed=0
+
     eval "$cmd > \"$output_file\" 2>&1 &"
-    wait $!
-    local status=$?
-    echo "Waiting for 13 seconds..."
-    sleep 13  # 10-second pause between commands
-    echo "Next command is starting..."
-    return $status
+    local pid=$!
+
+    while kill -0 "$pid" 2>/dev/null; do
+        printf "\r${YELLOW}[~] Elapsed: %02d:%02d${RESET}" $((elapsed/60)) $((elapsed%60))
+        sleep 1
+        ((elapsed++))
+    done
+
+    wait "$pid"
+    printf "\r${GREEN}[~] Elapsed: %02d:%02d${RESET}\n" $((elapsed/60)) $((elapsed%60))
+    sleep 3
 }
 
-# Function to extract IP addresses using dig
-extract_ips() {
-    # Only extract IP addresses without printing extra information
-    dig +short "$TARGET" | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | sort -u
+# Updater Function: Ensures all required tools are installed
+updater() {
+    echo -e "${CYAN}Starting dependency installation...${RESET}"
+    local tools=("whatweb" "sublist3r" "nmap" "wafw00f" "sslscan" "gobuster" "cmseek")
+    for tool in "${tools[@]}"; do
+        echo -e "${YELLOW}[+] Installing $tool...${RESET}"
+        run_with_timer "sudo apt install -y $tool" "/dev/null"
+    done
+    echo -e "${GREEN}All tools are installed and up-to-date!${RESET}"
 }
 
-# Function to run tests
-run_tests() {
-    echo "Running tests on $TARGET..."
-    IP_ADDRESSES=$(extract_ips)
-    
-    if [ -z "$IP_ADDRESSES" ]; then
-        echo "No IP addresses found. Exiting."
-        exit 1
+# Check if tools are installed, run updater if missing
+for tool in "whatweb" "sublist3r" "nmap" "wafw00f" "sslscan" "gobuster" "cmseek"; do
+    if ! command -v "$tool" &>/dev/null; then
+        echo -e "${YELLOW}Some tools are missing. Running updater.${RESET}"
+        updater
+        break
     fi
+done
 
-    echo "Extracted IP addresses: $IP_ADDRESSES"
+# Run the custom scans
+echo -e "${CYAN}Running tests on $TARGET...${RESET}"
 
-    for IP in $IP_ADDRESSES; do
-        echo "Running tests on IP: $IP"
+run_with_timer "whatweb \"$TARGET\"" "$RESULT_DIR/whatweb.txt"
+echo -e "${GREEN}[+] Running WhatWeb on $TARGET completed.${RESET}"
 
-        echo "Running WhatWeb..."
-        run_with_timeout "whatweb \"$IP\"" "$RESULT_DIR/whatweb.txt"
+if [[ ! "$TARGET" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo -e "${CYAN}[+] Running Sublist3r for domain enumeration...${RESET}"
+    run_with_timer "sublist3r -d \"$TARGET\"" "$RESULT_DIR/sublist3r.txt"
+fi
 
-        echo "Running Sublist3r (only for domains)..."
-        if [[ ! "$TARGET" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            run_with_timeout "sublist3r -d \"$TARGET\"" "$RESULT_DIR/sublist3r.txt"
-        fi
+echo -e "${CYAN}[+] Running Nmap HTTP Server Header Check...${RESET}"
+run_with_timer "nmap -p 80,443 --script http-server-header \"$TARGET\"" "$RESULT_DIR/nmap_http.txt"
 
-        echo "Running Nmap HTTP server header..."
-        run_with_timeout "nmap -p 80,443 --script http-server-header \"$IP\"" "$RESULT_DIR/nmap_http.txt"
+echo -e "${CYAN}[+] Running Nmap Aggressive Scan...${RESET}"
+run_with_timer "nmap -A \"$TARGET\"" "$RESULT_DIR/nmap_aggressive.txt"
 
-        echo "Running Nmap Aggressive Scan..."
-        run_with_timeout "nmap -A \"$IP\"" "$RESULT_DIR/nmap_aggressive.txt"
+echo -e "${CYAN}[+] Running WAFW00F for WAF Detection...${RESET}"
+run_with_timer "wafw00f -a \"$TARGET\"" "$RESULT_DIR/wafw00f.txt"
 
-        echo "Running WAFW00F..."
-        run_with_timeout "wafw00f -a \"$TARGET\"" "$RESULT_DIR/wafw00f.txt"
+echo -e "${CYAN}[+] Running SSLScan...${RESET}"
+run_with_timer "sslscan \"$TARGET\"" "$RESULT_DIR/sslscan.txt"
 
-        echo "Running SSLScan..."
-        run_with_timeout "sslscan \"$IP\"" "$RESULT_DIR/sslscan.txt"
+echo -e "${CYAN}[+] Running Nmap SSL Enum Ciphers...${RESET}"
+run_with_timer "nmap --script ssl-enum-ciphers -p 443 \"$TARGET\"" "$RESULT_DIR/nmap_ssl_ciphers.txt"
 
-        echo "Running Nmap SSL Enum Ciphers..."
-        run_with_timeout "nmap --script ssl-enum-ciphers -p 443 -oX \"$RESULT_DIR/nmap_ssl_ciphers.xml\" \"$IP\"" "$RESULT_DIR/nmap_ssl_ciphers.txt"
+echo -e "${CYAN}[+] Running Directory Brute-forcing with Gobuster...${RESET}"
+run_with_timer "gobuster dir -u \"$TARGET\" -w /usr/share/wordlists/dirb/common.txt" "$RESULT_DIR/gobuster.txt"
 
-        echo "Running directory brute-forcing with Gobuster..."
-        run_with_timeout "gobuster dir -u \"$TARGET\" -w /usr/share/wordlists/dirb/common.txt" "$RESULT_DIR/gobuster.txt"
+echo -e "${CYAN}[+] Running CMS Identification with CMSeek...${RESET}"
+run_with_timer "cmseek -u \"$TARGET\"" "$RESULT_DIR/cmseek.txt"
 
-        echo "Running CMS identification with CMSeek..."
-        run_with_timeout "cmseek -u \"$TARGET\"" "$RESULT_DIR/cmseek.txt"
+echo -e "${CYAN}[+] Running Nmap Vulners Script...${RESET}"
+run_with_timer "nmap -sV --script vulners \"$TARGET\"" "$RESULT_DIR/nmap_vulners.txt"
 
-        echo "Running Nmap Vulners script..."
-        run_with_timeout "nmap -sV --script vulners \"$IP_ADDRESS\"" "$RESULT_DIR/nmap_vulners.txt"
-
-    done
-
-    echo "Tests completed. Results stored in the '$RESULT_DIR' directory."
-}
-
-# Function to display summary
-display_summary() {
-    echo "Summary of tests:"
-    echo "-----------------"
-    for file in "$RESULT_DIR"/*.txt; do
-        echo "$(basename "$file"):"
-        head -n 5 "$file"
-        echo "..."
-    done
-    echo "End of summary."
-}
-
-# Function to launch tools
-launch_tools() {
-    while true; do
-        echo "Select a tool or action to launch:"
-        echo "1) ZAP"
-        echo "2) Burp Suite"
-        echo "3) Save results as report"
-        echo "4) Exit"
-        read -p "Enter your choice (1/2/3/4): " choice
-
-        case $choice in
-            1)
-                echo "Launching ZAP..."
-                /root/Desktop/ZAP/zap.sh &
-                ;;
-            2)
-                echo "Launching Burp Suite..."
-                burpsuite &
-                ;;
-            3)
-                echo "Saving results as report..."
-                cat "$RESULT_DIR"/*.txt > "$RESULT_DIR/report.txt"
-                echo "Report saved as report.txt in the results directory."
-                ;;
-            4)
-                echo "Exiting."
-                exit 0
-                ;;
-            *)
-                echo "Invalid choice. Please enter a number from 1 to 4."
-                ;;
-        esac
-    done
-}
-
-# Run tests, display summary, and launch tools
-run_tests
-display_summary
-launch_tools
+echo -e "${GREEN}All scans completed! Results saved in ${RESULT_DIR}.${RESET}"
