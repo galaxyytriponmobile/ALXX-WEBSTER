@@ -24,8 +24,8 @@ search_vulnerabilities() {
     echo "Analyzing $file for vulnerabilities and open ports..." >> "$SUMMARY_FILE"
     echo "----------------------------------------------------" >> "$SUMMARY_FILE"
 
-    # Extract vulnerabilities or insecure findings with expanded keyword list
-    grep -iE "(vulnerable|vulnerability|exploit|insecure|cve-|warning|security|WAF detected|firewall|blocking requests|signature|Cloudflare|ModSecurity|Imperva|XSS|SQLi|remote code execution|shellshock|CORS|OS detection|Apache|Nginx|nginx|version|detected|CMS|Drupal|WordPress|Joomla|Content-Type: application|OS:|server:|powered by)" "$file" \
+    # Extract vulnerabilities or insecure findings with an expanded keyword list
+    grep -iE "(vulnerable|vulnerability|exploit|insecure|cve-|warning|security|WAF detected|firewall|blocking requests|signature|Cloudflare|ModSecurity|Imperva|XSS|SQLi|remote code execution|shellshock|CORS|OS detection|Apache|Nginx|nginx|version|detected|CMS|Drupal|WordPress|Joomla|Content-Type: application|OS:|server:|powered by|gobuster|directory|brute force|cmseek|cms|database leak|plugin|vulners|outdated|denial of service|authentication bypass)" "$file" \
         | grep -vi "not vulnerable" -A 1 -B 1 >> "$SUMMARY_FILE"
 
     # Extract subdomain enumeration results relevant to TARGET
