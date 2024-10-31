@@ -17,9 +17,17 @@ Welcome to **WEBSTER**! Your go-to automated reconnaissance tool for gathering i
 - **Report Generation**: Combines individual scan results into a single report.
 
 ## Usage 🛠️
+Installing;
 
 ```bash
-chmod +x webster.sh
+sudo git clone https://github.com/galaxyytriponmobile/ALXX-WEBSTER.git
+cd ALXX-WEBSTER
+```
+
+Running;
+
+```bash
+sudo chmod +x webster.sh
 ./webster.sh <domain_or_ip>
 ```
 
