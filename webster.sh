@@ -4,9 +4,11 @@
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 CYAN='\033[1;36m'
+RED='\033[0;31m'
 RESET='\033[0m'
 
 # ASCII Art Banner
+chmod +x report_summary.sh
 clear
 
 echo -e "${CYAN}"
@@ -21,6 +23,7 @@ echo "   ░   ░     ░    ░    ░ ░  ░  ░    ░         ░     �
 echo "     ░       ░  ░ ░            ░              ░  ░   ░      "
 echo "                       ░                                    "
 echo -e "${RESET}"
+
 # Ensure the script is run with a target
 if [ -z "$1" ]; then
     echo "Usage: $0 <domain_or_ip>"
@@ -35,9 +38,13 @@ mkdir -p "$RESULT_DIR"
 run_with_timer() {
     local cmd="$1"
     local output_file="$2"
+    local header="$3"
     local elapsed=0
 
-    eval "$cmd > \"$output_file\" 2>&1 &"
+    # Add a color-coded header to the output file
+    echo -e "${header}${RESET}" > "$output_file"
+
+    eval "$cmd >> \"$output_file\" 2>&1 &"
     local pid=$!
 
     while kill -0 "$pid" 2>/dev/null; do
@@ -74,40 +81,41 @@ done
 # Run the custom scans
 echo -e "${CYAN}Running tests on $TARGET...${RESET}"
 
-run_with_timer "whatweb \"$TARGET\"" "$RESULT_DIR/whatweb.txt"
+run_with_timer "whatweb \"$TARGET\"" "$RESULT_DIR/whatweb.txt" "${GREEN}--- WhatWeb Results ---"
 echo -e "${GREEN}[+] Running WhatWeb on $TARGET completed.${RESET}"
 
 if [[ ! "$TARGET" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     echo -e "${CYAN}[+] Running Sublist3r for domain enumeration...${RESET}"
-    run_with_timer "sublist3r -d \"$TARGET\"" "$RESULT_DIR/sublist3r.txt"
+    run_with_timer "sublist3r -d \"$TARGET\"" "$RESULT_DIR/sublist3r.txt" "${YELLOW}--- Sublist3r Results ---"
 fi
 
 echo -e "${CYAN}[+] Running Nmap HTTP Server Header Check...${RESET}"
-run_with_timer "nmap -p 80,443 --script http-server-header \"$TARGET\"" "$RESULT_DIR/nmap_http.txt"
+run_with_timer "nmap -p 80,443 --script http-server-header \"$TARGET\"" "$RESULT_DIR/nmap_http.txt" "${CYAN}--- Nmap HTTP Server Header Check Results ---"
 
 echo -e "${CYAN}[+] Running Nmap Aggressive Scan...${RESET}"
-run_with_timer "nmap -A \"$TARGET\"" "$RESULT_DIR/nmap_aggressive.txt"
+run_with_timer "nmap -A \"$TARGET\"" "$RESULT_DIR/nmap_aggressive.txt" "${RED}--- Nmap Aggressive Scan Results ---"
 
 echo -e "${CYAN}[+] Running WAFW00F for WAF Detection...${RESET}"
-run_with_timer "wafw00f -a \"$TARGET\"" "$RESULT_DIR/wafw00f.txt"
+run_with_timer "wafw00f -a \"$TARGET\"" "$RESULT_DIR/wafw00f.txt" "${GREEN}--- WAFW00F Results ---"
 
 echo -e "${CYAN}[+] Running SSLScan...${RESET}"
-run_with_timer "sslscan \"$TARGET\"" "$RESULT_DIR/sslscan.txt"
+run_with_timer "sslscan \"$TARGET\"" "$RESULT_DIR/sslscan.txt" "${CYAN}--- SSLScan Results ---"
 
 echo -e "${CYAN}[+] Running Nmap SSL Enum Ciphers...${RESET}"
-run_with_timer "nmap --script ssl-enum-ciphers -p 443 \"$TARGET\"" "$RESULT_DIR/nmap_ssl_ciphers.txt"
+run_with_timer "nmap --script ssl-enum-ciphers -p 443 \"$TARGET\"" "$RESULT_DIR/nmap_ssl_ciphers.txt" "${YELLOW}--- Nmap SSL Enum Ciphers Results ---"
 
 echo -e "${CYAN}[+] Running Directory Brute-forcing with Gobuster...${RESET}"
-run_with_timer "gobuster dir -u \"$TARGET\" -w /usr/share/wordlists/dirb/common.txt" "$RESULT_DIR/gobuster.txt"
+run_with_timer "gobuster dir -u \"$TARGET\" -w /usr/share/wordlists/dirb/common.txt" "$RESULT_DIR/gobuster.txt" "${RED}--- Gobuster Results ---"
 
 echo -e "${CYAN}[+] Running CMS Identification with CMSeek...${RESET}"
-run_with_timer "cmseek -u \"$TARGET\"" "$RESULT_DIR/cmseek.txt"
+run_with_timer "cmseek -u \"$TARGET\"" "$RESULT_DIR/cmseek.txt" "${GREEN}--- CMSeek Results ---"
 
 echo -e "${CYAN}[+] Running Nmap Vulners Script...${RESET}"
-run_with_timer "nmap -sV --script vulners \"$TARGET\"" "$RESULT_DIR/nmap_vulners.txt"
+run_with_timer "nmap -sV --script vulners \"$TARGET\"" "$RESULT_DIR/nmap_vulners.txt" "${CYAN}--- Nmap Vulners Script Results ---"
 
 echo -e "${GREEN}All scans completed! Results saved in ${RESULT_DIR}.${RESET}"
 
+# Generate a combined report with colorized headers
 REPORT_FILE="$RESULT_DIR/report.txt"
 echo -e "${CYAN}Generating report summary at $REPORT_FILE...${RESET}"
 cat "$RESULT_DIR"/*.txt > "$REPORT_FILE"
