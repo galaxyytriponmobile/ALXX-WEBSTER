@@ -1,38 +1,26 @@
 
-# 🚀 Web Test Script with Enhanced Features 🚀
+# WEBSTER - Automated Reconnaissance Tool 🕵️‍♂️
 
-Welcome to the WEBSTER! This tool lets you test a target domain or IP using a range of reconnaissance and scanning tools to gather information on the web server, subdomains, IPs, SSL/TLS security, and more.
+Welcome to **WEBSTER**! Your go-to automated reconnaissance tool for gathering information about a target domain or IP. This tool runs various scans and saves the results in individual files for easy review, as well as a consolidated report!
 
----
+## Features 🚀
 
-## 🌟 Features
+- **Dependency Check**: Automatically verifies if required tools are installed, updating as necessary.
+- **Custom Scans**:
+  - WhatWeb: Identifies the underlying technologies of websites.
+  - Sublist3r: Enumerates subdomains of the target domain.
+  - Nmap: Runs different types of scans to gather details about the target.
+  - WAFW00F: Detects Web Application Firewalls (WAFs).
+  - SSLScan: Assesses SSL/TLS protocols.
+  - Gobuster: Brute-forces directories to discover hidden paths.
+  - CMSeek: CMS detection and vulnerability scanning.
+- **Report Generation**: Combines individual scan results into a single report.
 
-1. **Initial IP Extraction**:
-   - Extract IP using `dig` command to identify primary IP before further scans.
+## Usage 🛠️
 
-2. **Nikto Vulnerability Scan** (Optional with timeout skip):
-   - `Nikto` is run in the background to check for potential vulnerabilities. You can opt to skip this scan if it takes too long.
-
-
-4. **Customizable Timeout and Pauses**:
-   - 10-second rest after each command to avoid overwhelming requests.
-
-5. **Summary & Optional Tools**:
-   - Generates a summary of results, with an option to launch tools like ZAP, Burp Suite, or save results in a report.
-
----
-
-## 🚀 Getting Started
-To get repo, copy this code;
-```bash
-git clone https://github.com/galaxyytriponmobile/ALXX-WEBSTER.git
-cd ALXX-WEBSTER
-```
-
-To use the script, run:
 ```bash
 chmod +x webster.sh
-./webster.sh <target_domain_or_ip>
+./webster.sh <domain_or_ip>
 ```
 
 Example:
@@ -40,34 +28,47 @@ Example:
 ./webster.sh example.com
 ```
 
-Run report_summary.sh to parse and summarize the report.txt:
-```bash
-./report_summary.sh
-```
-This script will search for key terms like "vulnerability," "exploit," "OS", and "SSL/TLS" to generate an overview of findings.
+## Requirements 📦
 
-Results are saved in the `results/` folder, with individual files for each scan.
+WEBSTER uses the following tools. If any are missing, it will install them.
+- `sublist3r`
+- `nmap`
+- `wafw00f`
+- `sslscan`
+- `gobuster`
+- `cmseek`
+
+## Output Files 📄
+
+- Each tool’s output is saved in the **results/** directory.
+- Individual files include:
+  - `whatweb.txt`
+  - `sublist3r.txt`
+  - `nmap_http.txt`, `nmap_aggressive.txt`, `nmap_ssl_ciphers.txt`, `nmap_vulners.txt`
+  - `wafw00f.txt`
+  - `sslscan.txt`
+  - `gobuster.txt`
+  - `cmseek.txt`
+- Consolidated report is saved as `report.txt`.
+
+ ## 📝 Update Log
+
+-**v2.8**: Removed `report_summary.sh` because of uselessness, and added colored headers to report.txt, making it more readable.
+-**v2.7**: Fused `updater.sh` into `webster.sh` and updated the looks, looks amazing now.
+-**v2.6**: Added even more keywords, added `updater.sh` into repo.
+-**v2.5**: Added keywords for cmseek and gobuster into `report_summary.sh`.
+-**v2.4**: Added `cmseek` and `gobuster` to webster, adding keywords in v2.5 and in future versions i will be updating looks to make it look better.
+-**v2.3**: Added `report_summary.sh` to scan and report vulnerabilities from report.txt.
+-**v2.2**: Removed `searchsploit` because of uselessness and errors.
+-**v2.1**: Fixed IP related errors, removed `nikto` because of issues, I will be adding it back.
+-**v2.0**: Integrated IP extraction with `dig`, added optional `Nikto` timeout skip, reorganized scan order, and improved summaries.
+-**v1.0**: Initial release.
+
+## Notes 📝
+
+This script is intended for ethical hacking and penetration testing purposes **only**. Use responsibly! 💡
 
 ---
 
-## 📝 Update Log
+**Happy Scanning!** 🎉
 
-- **v2.7**: Fused `updater.sh` into `webster.sh` and updated the looks, looks amazing now.
-- **v2.6**: Added even more keywords, added `updater.sh` into repo.
-- **v2.5**: Added keywords for `cmseek` and `gobuster` into `report_summary.sh`
-- **v2.4**: Added `cmseek` and `gobuster` to webster, adding keywords in v2.5 and in future versions i will be updating looks to make it look better.
-- **v2.3**: Added `report_summary.sh` to scan and report vulnerabilities from `report.txt`.
-- **v2.2**: Removed `searchsploit` because of uselessness and errors.
-- **v2.1**: Fixed IP related errors, removed `nikto` because of issues, I will be adding it back.
-- **v2.0**: Integrated IP extraction with `dig`, added optional Nikto timeout skip, reorganized scan order, and improved summaries.
-- **v1.0**: Initial release.
-
----
-
-## 👥 Contact
-
-For feedback or issues, reach out to:
-
-- **GitHub**: [GitHub Profile](https://github.com/galaxyytriponmobile)
-
-Happy Scanning! 🚀
