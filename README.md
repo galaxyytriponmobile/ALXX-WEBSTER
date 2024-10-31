@@ -53,16 +53,26 @@ WEBSTER uses the following tools. If any are missing, it will install them.
 
  ## 📝 Update Log
 
--**v2.8**: Removed `report_summary.sh` because of uselessness, and added colored headers to report.txt, making it more readable.
--**v2.7**: Fused `updater.sh` into `webster.sh` and updated the looks, looks amazing now.
--**v2.6**: Added even more keywords, added `updater.sh` into repo.
--**v2.5**: Added keywords for cmseek and gobuster into `report_summary.sh`.
--**v2.4**: Added `cmseek` and `gobuster` to webster, adding keywords in v2.5 and in future versions i will be updating looks to make it look better.
--**v2.3**: Added `report_summary.sh` to scan and report vulnerabilities from report.txt.
--**v2.2**: Removed `searchsploit` because of uselessness and errors.
--**v2.1**: Fixed IP related errors, removed `nikto` because of issues, I will be adding it back.
--**v2.0**: Integrated IP extraction with `dig`, added optional `Nikto` timeout skip, reorganized scan order, and improved summaries.
--**v1.0**: Initial release.
+ -**v2.8**: Removed `report_summary.sh` because of uselessness, and added colored headers to report.txt, making it more readable.
+
+ -**v2.7**: Fused `updater.sh` into `webster.sh` and updated the looks, looks amazing now.
+
+ -**v2.6**: Added even more keywords, added `updater.sh` into repo.
+
+ -**v2.5**: Added keywords for cmseek and gobuster into `report_summary.sh`.
+
+ -**v2.4**: Added `cmseek` and `gobuster` to webster, adding keywords in v2.5 and in future versions i will be updating looks to make it look better.
+
+ -**v2.3**: Added `report_summary.sh` to scan and report vulnerabilities from report.txt.
+
+ -**v2.2**: Removed `searchsploit` because of uselessness and errors.
+
+ -**v2.1**: Fixed IP related errors, removed `nikto` because of issues, I will be adding it back.
+
+ -**v2.0**: Integrated IP extraction with `dig`, added optional `Nikto` timeout skip, reorganized scan order, and improved summaries.
+
+ -**v1.0**: Initial release.
+
 
 ## Notes 📝
 
