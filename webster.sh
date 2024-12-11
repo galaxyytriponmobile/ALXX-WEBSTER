@@ -41,7 +41,6 @@ run_with_timer() {
     local header="$3"
     local elapsed=0
 
-    # Add a color-coded header to the output file
     echo -e "${header}${RESET}" > "$output_file"
 
     eval "$cmd >> \"$output_file\" 2>&1 &"
@@ -58,64 +57,71 @@ run_with_timer() {
     sleep 3
 }
 
-# Updater Function: Ensures all required tools are installed
-updater() {
-    echo -e "${CYAN}Starting dependency installation...${RESET}"
-    local tools=("whatweb" "sublist3r" "nmap" "wafw00f" "sslscan" "gobuster" "cmseek")
-    for tool in "${tools[@]}"; do
-        echo -e "${YELLOW}[+] Installing $tool...${RESET}"
-        run_with_timer "sudo apt install -y $tool" "/dev/null"
-    done
-    echo -e "${GREEN}All tools are installed and up-to-date!${RESET}"
-}
-
-# Check if tools are installed, run updater if missing
-for tool in "whatweb" "sublist3r" "nmap" "wafw00f" "sslscan" "gobuster" "cmseek"; do
+# Ensure tools are installed
+REQUIRED_TOOLS=("whatweb" "sublist3r" "nmap" "wafw00f" "sslscan" "gobuster" "cmseek" "nikto")
+for tool in "${REQUIRED_TOOLS[@]}"; do
     if ! command -v "$tool" &>/dev/null; then
-        echo -e "${YELLOW}Some tools are missing. Running updater.${RESET}"
-        updater
-        break
+        echo -e "${YELLOW}[+] Installing missing tool: $tool...${RESET}"
+        sudo apt install -y "$tool"
     fi
 done
 
-# Run the custom scans
-echo -e "${CYAN}Running tests on $TARGET...${RESET}"
+# Run the scans
+echo -e "${CYAN}[+] Running WhatWeb to identify technologies on the target...${RESET}"
+echo -e "${YELLOW}Command: whatweb \"$TARGET\"${RESET}"
+run_with_timer "whatweb \"$TARGET\"" "$RESULT_DIR/whatweb.txt" "${GREEN}--- WhatWeb Results ---" "Identifying technologies and frameworks on the target website."
 
-run_with_timer "whatweb \"$TARGET\"" "$RESULT_DIR/whatweb.txt" "${GREEN}--- WhatWeb Results ---"
-echo -e "${GREEN}[+] Running WhatWeb on $TARGET completed.${RESET}"
+echo -e "${CYAN}[+] Enumerating subdomains with Sublist3r...${RESET}"
+echo -e "${YELLOW}Command: sublist3r -d \"$TARGET\"${RESET}"
+run_with_timer "sublist3r -d \"$TARGET\"" "$RESULT_DIR/sublist3r.txt" "${YELLOW}--- Sublist3r Results ---" "Enumerating subdomains with Sublist3r."
 
-if [[ ! "$TARGET" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    echo -e "${CYAN}[+] Running Sublist3r for domain enumeration...${RESET}"
-    run_with_timer "sublist3r -d \"$TARGET\"" "$RESULT_DIR/sublist3r.txt" "${YELLOW}--- Sublist3r Results ---"
+echo -e "${CYAN}[+] Checking HTTP server headers with Nmap...${RESET}"
+echo -e "${YELLOW}Command: nmap -p 80,443 --script http-server-header \"$TARGET\"${RESET}"
+run_with_timer "nmap -p 80,443 --script http-server-header \"$TARGET\"" "$RESULT_DIR/nmap_http.txt" "${CYAN}--- Nmap HTTP Server Header Check Results ---" "Checking HTTP server headers using Nmap."
+
+echo -e "${CYAN}[+] Performing an aggressive Nmap scan...${RESET}"
+echo -e "${YELLOW}Command: nmap -A \"$TARGET\"${RESET}"
+run_with_timer "nmap -A \"$TARGET\"" "$RESULT_DIR/nmap_aggressive.txt" "${RED}--- Nmap Aggressive Scan Results ---" "Performing an aggressive scan with Nmap."
+
+echo -e "${CYAN}[+] Detecting WAF presence with WAFW00F...${RESET}"
+echo -e "${YELLOW}Command: wafw00f -a \"$TARGET\"${RESET}"
+run_with_timer "wafw00f -a \"$TARGET\"" "$RESULT_DIR/wafw00f.txt" "${GREEN}--- WAFW00F Results ---" "Detecting the presence of a web application firewall (WAF) with WAFW00F."
+
+echo -e "${CYAN}[+] Analyzing SSL/TLS configurations with SSLScan...${RESET}"
+echo -e "${YELLOW}Command: sslscan \"$TARGET\"${RESET}"
+run_with_timer "sslscan \"$TARGET\"" "$RESULT_DIR/sslscan.txt" "${CYAN}--- SSLScan Results ---" "Analyzing SSL/TLS configurations with SSLScan."
+
+echo -e "${CYAN}[+] Enumerating SSL/TLS ciphers with Nmap...${RESET}"
+echo -e "${YELLOW}Command: nmap --script ssl-enum-ciphers -p 443 \"$TARGET\"${RESET}"
+run_with_timer "nmap --script ssl-enum-ciphers -p 443 \"$TARGET\"" "$RESULT_DIR/nmap_ssl_ciphers.txt" "${YELLOW}--- Nmap SSL Enum Ciphers Results ---" "Enumerating SSL/TLS ciphers with Nmap."
+
+echo -e "${CYAN}[+] Brute-forcing directories with Gobuster...${RESET}"
+echo -e "${YELLOW}Command: gobuster dir -u \"$TARGET\" -w /usr/share/wordlists/dirb/common.txt${RESET}"
+run_with_timer "gobuster dir -u \"$TARGET\" -w /usr/share/wordlists/dirb/common.txt" "$RESULT_DIR/gobuster.txt" "${RED}--- Gobuster Results ---" "Brute-forcing directories with Gobuster."
+
+echo -e "${CYAN}[+] Scanning for vulnerabilities with Nmap Vulners script...${RESET}"
+echo -e "${YELLOW}Command: nmap -sV --script vulners \"$TARGET\"${RESET}"
+run_with_timer "nmap -sV --script vulners \"$TARGET\"" "$RESULT_DIR/nmap_vulners.txt" "${CYAN}--- Nmap Vulners Script Results ---" "Scanning for vulnerabilities with Nmap Vulners script."
+
+# Interactive CMSeek section
+read -p "${CYAN}[?] Would you like to run CMSeek interactively? (y/n): ${RESET}" RUN_CMSEEK
+if [[ "$RUN_CMSEEK" =~ ^[Yy]$ ]]; then
+    echo -e "${CYAN}[+] Running CMSeek interactively to identify CMS...${RESET}"
+    echo -e "${YELLOW}Command: cmseek -u \"$TARGET\"${RESET}"
+	cls
+    cmseek -u "$TARGET" | tee "$RESULT_DIR/cmseek.txt"
+    echo -e "${GREEN}[+] CMSeek completed interactively.${RESET}"
+else
+    echo -e "${YELLOW}[-] Skipping CMSeek interactive scan.${RESET}"
 fi
 
-echo -e "${CYAN}[+] Running Nmap HTTP Server Header Check...${RESET}"
-run_with_timer "nmap -p 80,443 --script http-server-header \"$TARGET\"" "$RESULT_DIR/nmap_http.txt" "${CYAN}--- Nmap HTTP Server Header Check Results ---"
+# Nikto scan
+echo -e "${CYAN}[+] Scanning the web server for vulnerabilities with Nikto...${RESET}"
+echo -e "${YELLOW}Command: nikto -h \"$TARGET\"${RESET}"
+run_with_timer "nikto -h \"$TARGET\"" "$RESULT_DIR/nikto.txt" "${RED}--- Nikto Results ---" "Scanning the web server for vulnerabilities with Nikto."
 
-echo -e "${CYAN}[+] Running Nmap Aggressive Scan...${RESET}"
-run_with_timer "nmap -A \"$TARGET\"" "$RESULT_DIR/nmap_aggressive.txt" "${RED}--- Nmap Aggressive Scan Results ---"
 
-echo -e "${CYAN}[+] Running WAFW00F for WAF Detection...${RESET}"
-run_with_timer "wafw00f -a \"$TARGET\"" "$RESULT_DIR/wafw00f.txt" "${GREEN}--- WAFW00F Results ---"
-
-echo -e "${CYAN}[+] Running SSLScan...${RESET}"
-run_with_timer "sslscan \"$TARGET\"" "$RESULT_DIR/sslscan.txt" "${CYAN}--- SSLScan Results ---"
-
-echo -e "${CYAN}[+] Running Nmap SSL Enum Ciphers...${RESET}"
-run_with_timer "nmap --script ssl-enum-ciphers -p 443 \"$TARGET\"" "$RESULT_DIR/nmap_ssl_ciphers.txt" "${YELLOW}--- Nmap SSL Enum Ciphers Results ---"
-
-echo -e "${CYAN}[+] Running Directory Brute-forcing with Gobuster...${RESET}"
-run_with_timer "gobuster dir -u \"$TARGET\" -w /usr/share/wordlists/dirb/common.txt" "$RESULT_DIR/gobuster.txt" "${RED}--- Gobuster Results ---"
-
-echo -e "${CYAN}[+] Running CMS Identification with CMSeek...${RESET}"
-run_with_timer "cmseek -u \"$TARGET\"" "$RESULT_DIR/cmseek.txt" "${GREEN}--- CMSeek Results ---"
-
-echo -e "${CYAN}[+] Running Nmap Vulners Script...${RESET}"
-run_with_timer "nmap -sV --script vulners \"$TARGET\"" "$RESULT_DIR/nmap_vulners.txt" "${CYAN}--- Nmap Vulners Script Results ---"
-
-echo -e "${GREEN}All scans completed! Results saved in ${RESULT_DIR}.${RESET}"
-
-# Generate a combined report with colorized headers
+# Generate a combined report
 REPORT_FILE="$RESULT_DIR/report.txt"
 echo -e "${CYAN}Generating report summary at $REPORT_FILE...${RESET}"
 cat "$RESULT_DIR"/*.txt > "$REPORT_FILE"
