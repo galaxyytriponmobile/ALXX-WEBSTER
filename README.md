@@ -53,7 +53,7 @@ Example:
 
 -**v3.0**: Added back `nikto` and `cmseek`, this wil probably be the last update.
 
--**v2.9**: Added sufficient permissions for `webster.sh`, because as of before this update, you could only used it as root.
+-**v2.9**: Added sufficient permissions for `webster.sh`, because before this update, you could have only used it as root.
 
  -**v2.8**: Removed `report_summary.sh` because of uselessness, and added colored headers to `report.txt`, making it more readable.
 
