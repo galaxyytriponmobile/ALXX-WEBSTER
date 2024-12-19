@@ -36,16 +36,6 @@ Example:
 ./webster.sh example.com
 ```
 
-## Requirements 📦
-
-WEBSTER uses the following tools. If any are missing, it will install them.
-- `sublist3r`
-- `nmap`
-- `wafw00f`
-- `sslscan`
-- `gobuster`
-- `cmseek`
-
 ## Output Files 📄
 
 - Each tool’s output is saved in the **results/** directory.
