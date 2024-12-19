@@ -8,7 +8,6 @@ RED='\033[0;31m'
 RESET='\033[0m'
 
 # ASCII Art Banner
-chmod +x report_summary.sh
 clear
 
 echo -e "${CYAN}"
@@ -32,8 +31,8 @@ fi
 
 TARGET=$1
 RESULT_DIR="./results"
-mkdir -p "$RESULT_DIR"
-
+sudo mkdir -p "$RESULT_DIR"
+sudo chmod 777 ./results
 # Function to display time elapsed
 run_with_timer() {
     local cmd="$1"
@@ -63,6 +62,19 @@ for tool in "${REQUIRED_TOOLS[@]}"; do
     if ! command -v "$tool" &>/dev/null; then
         echo -e "${YELLOW}[+] Installing missing tool: $tool...${RESET}"
         sudo apt install -y "$tool"
+	clear
+ echo -e "${CYAN}"
+echo "  █     █░▓█████  ▄▄▄▄     ██████ ▄▄▄█████▓▓█████  ██▀███   "
+echo " ▓█░ █ ░█░▓█   ▀ ▓█████▄ ▒██    ▒ ▓  ██▒ ▓▒▓█   ▀ ▓██ ▒ ██▒ "
+echo " ▒█░ █ ░█ ▒███   ▒██▒ ▄██░ ▓██▄   ▒ ▓██░ ▒░▒███   ▓██ ░▄█ ▒ "
+echo " ░█░ █ ░█ ▒▓█  ▄ ▒██░█▀    ▒   ██▒░ ▓██▓ ░ ▒▓█  ▄ ▒██▀▀█▄   "
+echo " ░░██▒██▓ ░▒████▒░▓█  ▀█▓▒██████▒▒  ▒██▒ ░ ░▒████▒░██▓ ▒██▒ "
+echo " ░ ▓░▒ ▒  ░░ ▒░ ░░▒▓███▀▒▒ ▒▓▒ ▒ ░  ▒ ░░   ░░ ▒░ ░░ ▒▓ ░▒▓░ "
+echo "   ▒ ░ ░   ░ ░  ░▒░▒   ░ ░ ░▒  ░ ░    ░     ░ ░  ░  ░▒ ░ ▒░ "
+echo "   ░   ░     ░    ░    ░ ░  ░  ░    ░         ░     ░░   ░  "
+echo "     ░       ░  ░ ░            ░              ░  ░   ░      "
+echo "                       ░                                    "
+echo -e "${RESET}"
     fi
 done
 
@@ -108,7 +120,7 @@ read -p "${CYAN}[?] Would you like to run CMSeek interactively? (y/n): ${RESET}"
 if [[ "$RUN_CMSEEK" =~ ^[Yy]$ ]]; then
     echo -e "${CYAN}[+] Running CMSeek interactively to identify CMS...${RESET}"
     echo -e "${YELLOW}Command: cmseek -u \"$TARGET\"${RESET}"
-	cls
+	clear
     cmseek -u "$TARGET" | tee "$RESULT_DIR/cmseek.txt"
     echo -e "${GREEN}[+] CMSeek completed interactively.${RESET}"
 else
