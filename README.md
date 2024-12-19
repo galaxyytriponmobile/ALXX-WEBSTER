@@ -61,7 +61,11 @@ WEBSTER uses the following tools. If any are missing, it will install them.
 
  ## 📝 Update Log
 
- -**v2.8**: Removed `report_summary.sh` because of uselessness, and added colored headers to report.txt, making it more readable.
+-**v3.0**: Added back `nikto` and `cmseek`, this wil probably be the last update.
+
+-**v2.9**: Added sufficient permissions for `webster.sh`, because as of before this update, you could only used it as root.
+
+ -**v2.8**: Removed `report_summary.sh` because of uselessness, and added colored headers to `report.txt`, making it more readable.
 
  -**v2.7**: Fused `updater.sh` into `webster.sh` and updated the looks, looks amazing now.
 
