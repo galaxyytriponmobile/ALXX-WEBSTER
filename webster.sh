@@ -33,6 +33,7 @@ TARGET=$1
 RESULT_DIR="./results"
 sudo mkdir -p "$RESULT_DIR"
 sudo chmod 777 ./results
+sudo chmod 777 /
 # Function to display time elapsed
 run_with_timer() {
     local cmd="$1"
@@ -121,7 +122,7 @@ if [[ "$RUN_CMSEEK" =~ ^[Yy]$ ]]; then
     echo -e "${CYAN}[+] Running CMSeek interactively to identify CMS...${RESET}"
     echo -e "${YELLOW}Command: cmseek -u \"$TARGET\"${RESET}"
 	clear
-    cmseek -u "$TARGET" | tee "$RESULT_DIR/cmseek.txt"
+    sudo cmseek -u "$TARGET" | tee "$RESULT_DIR/cmseek.txt"
     echo -e "${GREEN}[+] CMSeek completed interactively.${RESET}"
 else
     echo -e "${YELLOW}[-] Skipping CMSeek interactive scan.${RESET}"
