@@ -79,9 +79,10 @@ Example:
 ## Notes 📝
 
 This script is intended for ethical hacking and penetration testing purposes **only**. Use responsibly! 💡
-This script was made by ChatGPT! From the README, to the script itself. Round of applause for ChatGPT!
 
 ---
+
+Made with AI (chatgpt), i think this script is fullproof, still expect errors.
 
 **Happy Scanning!** 🎉
 
