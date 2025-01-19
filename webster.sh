@@ -122,7 +122,7 @@ if [[ "$RUN_CMSEEK" =~ ^[Yy]$ ]]; then
     echo -e "${CYAN}[+] Running CMSeek interactively to identify CMS...${RESET}"
     echo -e "${YELLOW}Command: cmseek -u \"$TARGET\"${RESET}"
 	clear
-    sudo cmseek -u "$TARGET" | tee "$RESULT_DIR/cmseek.txt"
+    sudo cmseek -u "$TARGET" | sudo tee "$RESULT_DIR/cmseek.txt"
     echo -e "${GREEN}[+] CMSeek completed interactively.${RESET}"
 else
     echo -e "${YELLOW}[-] Skipping CMSeek interactive scan.${RESET}"
@@ -131,11 +131,11 @@ fi
 # Nikto scan
 echo -e "${CYAN}[+] Scanning the web server for vulnerabilities with Nikto...${RESET}"
 echo -e "${YELLOW}Command: nikto -h \"$TARGET\"${RESET}"
-run_with_timer "nikto -h \"$TARGET\"" "$RESULT_DIR/nikto.txt" "${RED}--- Nikto Results ---" "Scanning the web server for vulnerabilities with Nikto."
+run_with_timer "sudo nikto -h \"$TARGET\"" "$RESULT_DIR/nikto.txt" "${RED}--- Nikto Results ---" "Scanning the web server for vulnerabilities with Nikto."
 
 
 # Generate a combined report
 REPORT_FILE="$RESULT_DIR/report.txt"
 echo -e "${CYAN}Generating report summary at $REPORT_FILE...${RESET}"
-cat "$RESULT_DIR"/*.txt > "$REPORT_FILE"
+sudo cat "$RESULT_DIR"/*.txt > "$REPORT_FILE"
 echo -e "${GREEN}Report generated: $REPORT_FILE${RESET}"
