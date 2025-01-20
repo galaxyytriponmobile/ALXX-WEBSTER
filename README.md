@@ -28,9 +28,10 @@ Running;
 
 ```bash
 sudo chmod +x webster.sh
+```
+```bash
 ./webster.sh <domain_or_ip>
 ```
-
 Example:
 ```bash
 ./webster.sh example.com
