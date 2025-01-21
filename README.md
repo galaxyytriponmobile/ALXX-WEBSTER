@@ -32,10 +32,6 @@ sudo chmod +x webster.sh
 ```bash
 sudo ./webster.sh <domain_or_ip>
 ```
-Example:
-```bash
-./webster.sh example.com
-```
 
 ## Output Files 📄
 
