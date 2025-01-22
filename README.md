@@ -30,7 +30,7 @@ Running;
 sudo chmod +x webster.sh
 ```
 ```bash
-sudo ./webster.sh <domain_or_ip>
+sudo ./webster.sh 
 ```
 
 ## Output Files 📄
