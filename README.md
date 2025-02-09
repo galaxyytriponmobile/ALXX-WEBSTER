@@ -33,6 +33,11 @@ sudo chmod +x webster.sh
 sudo ./webster.sh 
 ```
 
+Example;
+```bash
+sudo ./webster.sh example.com
+```
+
 ## Output Files 📄
 
 - Each tool’s output is saved in the **results/** directory.
