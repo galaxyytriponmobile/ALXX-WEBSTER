@@ -3,8 +3,6 @@
 
 ## Web testing for noobs
 
-## Features 🚀
-
 ## Usage 🛠️
 Installing;
 
