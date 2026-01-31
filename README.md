@@ -1,7 +1,5 @@
 
-# WEBSTER 
-
-## Web testing for noobs
+# WEBSTER - web testing for noobs
 
 ## Usage 🛠️
 Installing;
