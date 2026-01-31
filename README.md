@@ -1,7 +1,7 @@
 
 # WEBSTER - web testing for noobs
 
-## Usage 🛠️
+## Usage 
 Installing;
 
 ```bash
@@ -23,14 +23,14 @@ Example;
 sudo ./webster.sh example.com
 ```
 
-## Output Files 📄
+## Output Files 
 
 - Each tool’s output is saved in the **results/** directory.
 
 - Consolidated as `report.txt`
 
 
-## Notes 📝
+## Notes 
 
 This script is intended for ethical hacking and penetration testing purposes **only**. Use responsibly! 
 
@@ -38,5 +38,5 @@ This script is intended for ethical hacking and penetration testing purposes **o
 
 Made with AI (chatgpt), i think this script is fullproof, still expect errors.
 
-**Happy Scanning!** 🎉
+**Happy Scanning!** 
 
