@@ -26,7 +26,7 @@ sudo ./webster.sh example.com
 ## Output Files 📄
 
 - Each tool’s output is saved in the **results/** directory.
-- 
+
 - Consolidated as `report.txt`
 
 
