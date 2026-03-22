@@ -81,7 +81,7 @@ read -p "[?] Are you authorized to scan this target? (yes/no): " confirm
 # =========================
 # TOOL CHECK
 # =========================
-REQUIRED_TOOLS=(whatweb sublist3r nmap wafw00f sslscan gobuster nikto)
+REQUIRED_TOOLS=(whatweb nmap wafw00f sslscan gobuster nikto)
 
 MISSING=()
 for tool in "${REQUIRED_TOOLS[@]}"; do
@@ -142,9 +142,6 @@ run_all_scans() {
     run_task "WhatWeb" "$RESULT_DIR/whatweb.txt" \
         whatweb "$TARGET" &
 
-    run_task "Sublist3r" "$RESULT_DIR/subdomains.txt" \
-        sublist3r -d "$TARGET" &
-
     run_task "Nmap Basic" "$RESULT_DIR/nmap_basic.txt" \
         nmap -p 80,443 --script http-server-header "$TARGET" &
 
@@ -179,7 +176,6 @@ else
     echo -e "${YELLOW}[!] Running in SEQUENTIAL mode${RESET}"
 
     run_task "WhatWeb" "$RESULT_DIR/whatweb.txt" whatweb "$TARGET"
-    run_task "Sublist3r" "$RESULT_DIR/subdomains.txt" sublist3r -d "$TARGET"
     run_task "Nmap Basic" "$RESULT_DIR/nmap_basic.txt" nmap -p 80,443 --script http-server-header "$TARGET"
     run_task "Nmap Aggressive" "$RESULT_DIR/nmap_aggressive.txt" nmap -A "$TARGET"
     run_task "WAF Detection" "$RESULT_DIR/waf.txt" wafw00f "$TARGET"
