@@ -54,6 +54,7 @@ run_with_timer() {
     local output_file="$2"
     local header="$3"
     local elapsed=0
+    local skipped=false
 
     echo -e "${header}${RESET}" > "$output_file"
 
@@ -61,13 +62,22 @@ run_with_timer() {
     local pid=$!
 
     while kill -0 "$pid" 2>/dev/null; do
-        printf "\r${YELLOW}[~] Elapsed: %02d:%02d${RESET}" $((elapsed/60)) $((elapsed%60))
-        sleep 1
+        printf "\r${YELLOW}[~] Elapsed: %02d:%02d (Press 'x' to skip)${RESET}" $((elapsed/60)) $((elapsed%60))
+        # Wait 1 second for 'x' key input
+        if read -t 1 -n 1 -s key && [[ "$key" == "x" ]]; then
+            kill "$pid" 2>/dev/null
+            echo -e "\n${RED}[!] Skipping command...${RESET}"
+            echo -e "\n--SKIPPED COMMAND--" >> "$output_file"
+            skipped=true
+            break
+        fi
         ((elapsed++))
     done
 
-    wait "$pid"
-    printf "\r${GREEN}[~] Elapsed: %02d:%02d${RESET}\n" $((elapsed/60)) $((elapsed%60))
+    if [ "$skipped" = false ]; then
+        wait "$pid"
+        printf "\r${GREEN}[~] Elapsed: %02d:%02d${RESET}\n" $((elapsed/60)) $((elapsed%60))
+    fi
     sleep 3
 }
 
