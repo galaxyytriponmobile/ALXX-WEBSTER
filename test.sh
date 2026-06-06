@@ -30,13 +30,20 @@ if [ -z "$1" ]; then
 fi
 
 TARGET=$1
-RESULT_DIR="./results"
 
 if [[ $EUID -ne 0 ]]; then
    echo -e "${RED}[!] This script must be run as root (use sudo)${RESET}"
    exit 1
 fi
 
+# Ask for project name at the start
+echo -ne "${CYAN}[?] Enter Project Name: ${RESET}"
+read PROJECT_NAME
+if [ -z "$PROJECT_NAME" ]; then
+    PROJECT_NAME="scan_$(date +%Y%m%d_%H%M%S)"
+fi
+
+RESULT_DIR="./$PROJECT_NAME"
 mkdir -p "$RESULT_DIR"
 chmod 750 "$RESULT_DIR"
 
@@ -64,18 +71,6 @@ run_with_timer() {
     while kill -0 "$pid" 2>/dev/null; do
         printf "\r${YELLOW}[~] Elapsed: %02d:%02d (Press 'x' to skip)${RESET}" $((elapsed/60)) $((elapsed%60))
         # Wait 1 second for 'x' key input        # Ask for project name at the start
-        if [ -z "$PROJECT_NAME" ]; then
-            echo -ne "${CYAN}[?] Enter Project Name: ${RESET}"
-            read PROJECT_NAME
-            if [ -z "$PROJECT_NAME" ]; then
-                PROJECT_NAME="scan_$(date +%Y%m%d_%H%M%S)"
-            fi
-            RESULT_DIR="./$PROJECT_NAME"
-            mkdir -p "$RESULT_DIR"
-            chmod 750 "$RESULT_DIR"
-            echo -e "${GREEN}[+] Results will be saved in: $RESULT_DIR${RESET}\n"
-        fi
-
         if read -t 1 -n 1 -s key && [[ "$key" == "x" ]]; then
             kill "$pid" 2>/dev/null
             echo -e "\n${RED}[!] Skipping command...${RESET}"
